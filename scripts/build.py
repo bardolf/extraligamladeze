@@ -76,8 +76,40 @@ def main():
 
     tpl = open(ROOT / "report" / "template.html", encoding="utf-8").read()
     data = "const SEASONS=" + json.dumps(seasons, ensure_ascii=False, separators=(",", ":")) + ";"
-    open(ROOT / "sila-extraligy-mladeze.html", "w", encoding="utf-8").write(tpl.replace("/*__DATA__*/", data))
-    print(len(seasons), "ročníků ->", "sila-extraligy-mladeze.html, sila-extraligy-mladeze.csv")
+    page = tpl.replace("/*__DATA__*/", data)
+    open(ROOT / "sila-extraligy-mladeze.html", "w", encoding="utf-8").write(page)
+    write_docs(page)
+    print(len(seasons), "ročníků ->", "sila-extraligy-mladeze.html, sila-extraligy-mladeze.csv, docs/")
+
+
+# Základ, který na claude.ai doplňuje obal artefaktu; na GitHub Pages ho musí dodat stránka sama.
+RESET_CSS = """:root { color-scheme: light; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+
+"""
+
+
+def write_docs(page):
+    """Z fragmentu pro artefakt udělá samostatnou stránku pro GitHub Pages: docs/index.html + docs/style.css."""
+    m = re.search(r"<style>\n(.*?)</style>\n", page, re.S)
+    head, css, body = page[:m.start()], m.group(1), page[m.end():]
+    desc = ("Vývoj síly MČR družstev mládeže (finále A) 2004/05–2025/26 podle průměrného Elo "
+            "top 5, 10 a 15 hráčů, v ELO ČR i FIDE.")
+    docs = ROOT / "docs"
+    docs.mkdir(exist_ok=True)
+    (docs / "style.css").write_text(RESET_CSS + css, encoding="utf-8")
+    (docs / ".nojekyll").write_text("", encoding="utf-8")
+    (docs / "index.html").write_text(
+        '<!doctype html>\n<html lang="cs">\n<head>\n<meta charset="utf-8">\n'
+        '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
+        f'<meta name="description" content="{desc}">\n'
+        + head.strip() + '\n<link rel="stylesheet" href="style.css">\n</head>\n<body>\n'
+        + body.strip() + "\n</body>\n</html>\n",
+        encoding="utf-8",
+    )
 
 
 if __name__ == "__main__":
