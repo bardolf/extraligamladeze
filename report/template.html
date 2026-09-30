@@ -1,0 +1,688 @@
+<title>Síla Extraligy mládeže</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* Layout: one reading column; the chart is the hero, findings above it, full season table below, method last. */
+:root {
+  --bg: #f4f6f9;
+  --surface: #fdfdfe;
+  --ink: #0f1520;
+  --ink-2: #485163;
+  --muted: #7a8394;
+  --grid: #e3e6ec;
+  --axis: #c3c8d1;
+  --border: rgba(15, 21, 32, 0.10);
+  --accent: #2a78d6;
+  --accent-ink: #1c5cab;
+  --wash: rgba(42, 120, 214, 0.08);
+  --heat: #2a78d6;
+  --s5: #104281;
+  --s10: #2a78d6;
+  --s15: #86b6ef;
+  --bar: #2a78d6;
+  --nodata: rgba(15, 21, 32, 0.035);
+  --font-display: "Archivo", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --font-body: "Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1015;
+    --surface: #151920;
+    --ink: #f2f4f8;
+    --ink-2: #c0c6d1;
+    --muted: #8a92a1;
+    --grid: #252a33;
+    --axis: #3a414c;
+    --border: rgba(255, 255, 255, 0.10);
+    --accent: #5598e7;
+    --accent-ink: #9ec5f4;
+    --wash: rgba(85, 152, 231, 0.12);
+    --heat: #3987e5;
+    --s5: #b7d3f6;
+    --s10: #5598e7;
+    --s15: #1c5cab;
+    --bar: #5598e7;
+    --nodata: rgba(255, 255, 255, 0.035);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1015;
+  --surface: #151920;
+  --ink: #f2f4f8;
+  --ink-2: #c0c6d1;
+  --muted: #8a92a1;
+  --grid: #252a33;
+  --axis: #3a414c;
+  --border: rgba(255, 255, 255, 0.10);
+  --accent: #5598e7;
+  --accent-ink: #9ec5f4;
+  --wash: rgba(85, 152, 231, 0.12);
+  --heat: #3987e5;
+  --s5: #b7d3f6;
+  --s10: #5598e7;
+  --s15: #1c5cab;
+  --bar: #5598e7;
+  --nodata: rgba(255, 255, 255, 0.035);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+}
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding-inline: 20px;
+  padding-block: 40px 64px;
+  display: grid;
+  gap: 40px;
+}
+@media (max-width: 480px) { .wrap { padding-inline: 16px; padding-block: 24px 48px; gap: 32px; } }
+
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2rem, 1.4rem + 2.6vw, 3.1rem); font-weight: 750; font-stretch: 82%; line-height: 1.05; letter-spacing: -0.01em; }
+h2 { font-size: 1.35rem; font-weight: 700; font-stretch: 90%; line-height: 1.2; }
+h3 { font-size: 1.02rem; font-weight: 650; font-stretch: 95%; }
+p { margin: 0; }
+a { color: var(--accent-ink); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+.eyebrow {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+header { display: grid; gap: 14px; }
+.lede { max-width: 66ch; color: var(--ink-2); font-size: 1.08rem; }
+
+/* Findings */
+.findings { display: grid; gap: 18px; }
+.findings ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 32px; }
+@media (max-width: 720px) { .findings ol { grid-template-columns: minmax(0, 1fr); } }
+.findings li { display: grid; gap: 4px; padding-top: 12px; border-top: 1px solid var(--axis); min-width: 0; }
+.findings li b { font-family: var(--font-display); font-weight: 650; font-stretch: 92%; font-size: 1.02rem; }
+.findings li span { color: var(--ink-2); }
+.num { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--ink); white-space: nowrap; }
+
+/* Panels */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 24px;
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+@media (max-width: 480px) { .panel { padding: 16px 12px; } }
+.panel-head { display: grid; gap: 6px; }
+.panel-head p { color: var(--ink-2); max-width: 70ch; }
+
+/* Controls */
+.controls { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; }
+.ctrl { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ctrl-label { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
+.seg { display: inline-flex; border: 1px solid var(--axis); border-radius: 8px; padding: 2px; gap: 2px; background: var(--bg); }
+.seg button {
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--ink-2);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+.seg button:hover { background: var(--wash); color: var(--ink); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 0 0 1px var(--border), 0 1px 2px rgba(0,0,0,0.06); }
+
+.legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 0.92rem; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.key { width: 18px; height: 0; border-top: 2px solid currentColor; display: inline-block; border-radius: 2px; }
+.key-bar { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+
+.chart { position: relative; width: 100%; min-width: 0; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
+.chart svg text { font-family: var(--font-body); }
+.tick { fill: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.endlab { fill: var(--ink); font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.endlab tspan.lbl { fill: var(--ink-2); font-weight: 400; }
+.nodata-lab { fill: var(--muted); font-size: 12px; font-style: italic; }
+.barlab { fill: var(--ink-2); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.tip {
+  position: absolute;
+  pointer-events: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.88rem;
+  min-width: 190px;
+  max-width: 260px;
+  display: grid;
+  gap: 4px;
+  z-index: 2;
+}
+.tip[hidden] { display: none; }
+.tip .t-h { font-family: var(--font-display); font-weight: 650; font-stretch: 92%; font-size: 0.98rem; }
+.tip .t-sub { color: var(--muted); font-size: 0.82rem; line-height: 1.3; }
+.tip .t-row { display: flex; align-items: center; gap: 8px; }
+.tip .t-row strong { font-variant-numeric: tabular-nums; min-width: 3.2em; }
+.tip .t-row em { font-style: normal; color: var(--ink-2); }
+.chart-note { font-size: 0.88rem; color: var(--muted); }
+
+/* Table */
+.tbl-wrap { overflow-x: auto; min-width: 0; margin-inline: -4px; }
+table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
+th, td { padding: 8px 10px; text-align: left; vertical-align: middle; }
+thead th {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--axis);
+  white-space: nowrap;
+}
+tbody tr.row > td { border-bottom: 1px solid var(--grid); }
+td.r, th.r { text-align: right; font-variant-numeric: tabular-nums; }
+td.v { font-weight: 600; width: 5.2em; }
+td.v.max { box-shadow: inset 0 0 0 2px var(--accent); border-radius: 4px; }
+td.season { white-space: nowrap; font-weight: 600; }
+td.season a { color: var(--ink); text-decoration-color: var(--axis); }
+td.team { color: var(--ink-2); min-width: 12em; }
+td.best { color: var(--ink-2); white-space: nowrap; }
+td.best .num { margin-left: 4px; }
+.dash { color: var(--muted); font-weight: 400; }
+.fn { color: var(--muted); font-size: 0.8em; vertical-align: super; line-height: 0; }
+.more {
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent-ink);
+  background: transparent;
+  border: 1px solid var(--axis);
+  border-radius: 6px;
+  padding: 3px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.more:hover { background: var(--wash); }
+.more[aria-expanded="true"] { background: var(--wash); border-color: var(--accent); }
+tr.detail > td { padding: 4px 10px 18px; border-bottom: 1px solid var(--grid); background: var(--bg); }
+.players { width: 100%; font-size: 0.9rem; }
+.players th { font-size: 0.72rem; border-bottom: 1px solid var(--grid); padding: 8px 8px 6px; }
+.players td { padding: 5px 8px; border-bottom: 1px solid var(--grid); }
+.players tr:last-child td { border-bottom: 0; }
+.players td.sel { font-weight: 700; }
+.players td.muted { color: var(--muted); }
+
+/* Method */
+.method { display: grid; gap: 14px; }
+.method ul { margin: 0; padding-left: 1.1em; display: grid; gap: 8px; color: var(--ink-2); max-width: 78ch; }
+.method li::marker { color: var(--muted); }
+.src { font-size: 0.9rem; color: var(--muted); }
+
+</style>
+
+<main class="wrap">
+  <header>
+    <div class="eyebrow">MČR družstev mládeže · finále A · ročníky 2004/05 – 2025/26</div>
+    <h1>Jak silná je Extraliga mládeže</h1>
+    <p class="lede">Průměrné Elo pěti, deseti a patnácti nejsilnějších hráčů v každém ročníku. Standardně se počítají jen hráči, kteří v soutěži skutečně nastoupili aspoň k jedné partii. Zdrojem jsou soupisky a výsledky po šachovnicích na chess.cz: 22 ročníků, vždy 8 družstev na 6 šachovnicích, 7 kol.</p>
+  </header>
+
+  <section class="findings" aria-labelledby="f-h">
+    <h2 id="f-h">Co ukazují data</h2>
+    <ol>
+      <li><b>Dva vrcholy</b><span>Poprvé v ročníku 2008/09, kdy top 10 měla podle ELO ČR průměr <span class="num">2270</span> (Jan Krejčí, Vojtěch Plát, Jiří Kočiščák). Podruhé v letech 2020/21 – 2022/23 s průměrem <span class="num">2246–2251</span> (Václav Finěk, Richard Stalmach, Jáchym Němec).</span></li>
+      <li><b>Útlum mezi lety 2010 a 2016</b><span>Top 10 se tehdy držela mezi <span class="num">2127</span> a <span class="num">2175</span>, tedy zhruba o 100 až 140 bodů níž než na prvním vrcholu.</span></li>
+      <li><b>Poslední ročník je slabší</b><span>V 2025/26 měla top 10 podle ELO ČR <span class="num">2156</span>, nejméně od ročníku 2015/16. Podle FIDE klesla z <span class="num">2323</span> (2022/23) na <span class="num">2255</span>, což odpovídá úrovni ročníku 2019/20.</span></li>
+      <li><b>ČR a FIDE Elo se rozcházejí</b><span>V 2011/12 měla top 10 FIDE Elo o <span class="num">33</span> bodů nižší než národní, v 2025/26 o <span class="num">99</span> vyšší. Mezi ročníky 2012/13 a 2022/23 proto top 10 podle FIDE stoupla o <span class="num">239</span> bodů, podle ČR jen o <span class="num">116</span>. Pro srovnání s ročníky před rokem 2011 je vhodnější ELO ČR, protože jako jediné pokrývá celé období.</span></li>
+    </ol>
+  </section>
+
+  <section class="panel" aria-labelledby="c-h">
+    <div class="panel-head">
+      <h2 id="c-h">Průměrné Elo nejsilnějších hráčů</h2>
+      <p id="c-sub">ELO ČR, hráči, kteří nastoupili aspoň k jedné partii.</p>
+    </div>
+    <div class="controls" role="group" aria-label="Nastavení grafu a tabulky">
+      <div class="ctrl">
+        <span class="ctrl-label" id="l-sys">Elo</span>
+        <div class="seg" role="group" aria-labelledby="l-sys">
+          <button type="button" id="sys-N" data-sys="N" aria-pressed="true">ČR (národní)</button>
+          <button type="button" id="sys-F" data-sys="F" aria-pressed="false">FIDE</button>
+        </div>
+      </div>
+      <div class="ctrl">
+        <span class="ctrl-label" id="l-base">Hráči</span>
+        <div class="seg" role="group" aria-labelledby="l-base">
+          <button type="button" id="base-played" data-base="played" aria-pressed="true">nastoupili</button>
+          <button type="button" id="base-roster" data-base="roster" aria-pressed="false">celá soupiska</button>
+        </div>
+      </div>
+    </div>
+    <div class="legend" aria-hidden="true">
+      <span><i class="key" style="color: var(--s5)"></i>Top 5</span>
+      <span><i class="key" style="color: var(--s10)"></i>Top 10</span>
+      <span><i class="key" style="color: var(--s15)"></i>Top 15</span>
+    </div>
+    <div class="chart" id="line-chart"></div>
+    <p class="chart-note">Osa y začíná na 2000 bodech a má stejné měřítko pro obě Elo, aby šlo škály porovnat přepnutím. Najetím myší (nebo šipkami po kliknutí do grafu) zobrazíte hodnoty ročníku.</p>
+  </section>
+
+  <section class="panel" aria-labelledby="g-h">
+    <div class="panel-head">
+      <h2 id="g-h">Rozdíl mezi FIDE a ČR Elo u top 10</h2>
+      <p>Průměr top 10 podle FIDE minus průměr top 10 podle ELO ČR. Kladná hodnota znamená, že FIDE hodnotí nejlepší hráče výš. FIDE Elo je na soupiskách až od ročníku 2011/12.</p>
+    </div>
+    <div class="chart" id="gap-chart"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="t-h">
+    <div class="panel-head">
+      <h2 id="t-h">Ročník po ročníku</h2>
+      <p id="t-sub">Hodnoty odpovídají nastavení nahoře. Orámované je maximum sloupce, sytost podbarvení roste s Elo. U každého ročníku lze rozbalit jeho 15 nejsilnějších hráčů.</p>
+    </div>
+    <div class="tbl-wrap">
+      <table id="tbl">
+        <thead>
+          <tr>
+            <th>Ročník</th>
+            <th>Vítěz</th>
+            <th class="r" id="th-n">Nastoupilo</th>
+            <th>Nejsilnější hráč</th>
+            <th class="r">Top 5</th>
+            <th class="r">Top 10</th>
+            <th class="r">Top 15</th>
+            <th><span class="sr" style="position:absolute;left:-9999px">Detail</span></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="method" aria-labelledby="m-h">
+    <h2 id="m-h">Metodika a omezení</h2>
+    <ul>
+      <li><b>Jaké Elo.</b> Použito Elo uvedené na soupisce daného ročníku, tedy hodnota z doby soutěže, ne dnešní. ELO ČR je k dispozici pro všechny ročníky, FIDE Elo až od 2011/12.</li>
+      <li><b>Kdo se počítá.</b> Standardně jen hráči, kteří odehráli aspoň jednu partii (kontumace se nepočítají). Přepínač „celá soupiska“ zahrne i náhradníky, kteří nenastoupili. Mezi nejsilnějšími jde o rozdíl jen v několika ročnících, nejvíc v 2016/17, kdy nenastoupil Matyáš Marek (2354).</li>
+      <li><b>Neúplná data.</b> U ročníku 2005/06 chybí na chess.cz výsledky 1. až 3. kola, takže „nastoupili“ vychází jen ze 4. až 7. kola. Ročníky 2003/04 a 2026/27 nemají soupisky.</li>
+      <li><b>Srovnatelnost škál.</b> Obě ratingové škály se v čase posouvají. U FIDE se mezi lety 2011 a 2025 změnila pravidla, která juniory ovlivňují nejvíc: koeficient K = 40 pro hráče do 18 let (od roku 2014) a jednorázové navýšení ratingů pod 2000 v březnu 2024. Rozdíl mezi ČR a FIDE proto nelze brát jako měření „skutečné“ síly, jen jako upozornění, že obě křivky nejsou totéž.</li>
+      <li><b>Co data nezachytí.</b> Soutěžní řád (věkový limit, povinné kategorie hráčů v sestavě) se mohl během let měnit a ovlivnit, kdo mohl nastoupit.</li>
+    </ul>
+    <p class="src">Zdroj: <a href="https://www.chess.cz/soutez/11/" target="_blank" rel="noopener">chess.cz, soutěž MČR družstev mládeže / Extraliga dorostu</a>, soupisky a výsledky po šachovnicích, staženo 30. 9. 2026.</p>
+  </section>
+</main>
+
+<script>
+/*__DATA__*/
+</script>
+<script>
+(function () {
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  var TOPS = ["5", "10", "15"];
+  var SERIES = { "5": "var(--s5)", "10": "var(--s10)", "15": "var(--s15)" };
+  var state = { sys: "N", base: "played" };
+  try {
+    var saved = JSON.parse(localStorage.getItem("eml-state") || "null");
+    if (saved && (saved.sys === "N" || saved.sys === "F")) state.sys = saved.sys;
+    if (saved && (saved.base === "played" || saved.base === "roster")) state.base = saved.base;
+  } catch (e) {}
+
+  function el(tag, attrs, text) {
+    var n = document.createElementNS(NS, tag);
+    if (attrs) for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function h(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function val(s, n) { return s.m[state.base][state.sys][n]; }
+  function fmtScore(x) {
+    var w = Math.floor(x), half = x - w >= 0.5;
+    if (w === 0 && half) return "½";
+    return String(w) + (half ? "½" : "");
+  }
+  function sysName() { return state.sys === "N" ? "ELO ČR" : "FIDE Elo"; }
+  function baseName() { return state.base === "played" ? "hráči, kteří nastoupili aspoň k jedné partii" : "všichni hráči na soupiskách, včetně těch, kteří nenastoupili"; }
+
+  /* ---------- line chart ---------- */
+  var lineBox = document.getElementById("line-chart");
+  var lineTip = h("div", "tip"); lineTip.hidden = true;
+  var lineIdx = null;
+  var Y0 = 2000, Y1 = 2400;
+
+  function renderLine() {
+    lineBox.textContent = "";
+    lineBox.appendChild(lineTip);
+    var W = Math.max(300, lineBox.clientWidth);
+    var narrow = W < 560;
+    var H = narrow ? 300 : 380;
+    var m = { l: 44, r: narrow ? 84 : 92, t: 14, b: 34 };
+    var pw = W - m.l - m.r, ph = H - m.t - m.b;
+    var n = SEASONS.length;
+    var x = function (i) { return m.l + (i * pw) / (n - 1); };
+    var y = function (v) { return m.t + ph - ((v - Y0) / (Y1 - Y0)) * ph; };
+    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, width: W, height: H, role: "img", tabindex: "0",
+      "aria-label": "Spojnicový graf průměrného " + sysName() + " top 5, top 10 a top 15 hráčů podle ročníků. Hodnoty jsou i v tabulce níže." });
+
+    // no-data band for FIDE
+    if (state.sys === "F") {
+      var firstF = SEASONS.findIndex(function (s) { return val(s, "10") != null; });
+      if (firstF > 0) {
+        var xe = (x(firstF - 1) + x(firstF)) / 2;
+        svg.appendChild(el("rect", { x: m.l, y: m.t, width: xe - m.l, height: ph, fill: "var(--nodata)" }));
+        var t = el("text", { x: (m.l + xe) / 2, y: m.t + ph / 2, "text-anchor": "middle", class: "nodata-lab" }, "FIDE Elo na soupiskách chybí");
+        svg.appendChild(t);
+      }
+    }
+    // grid + y ticks
+    for (var v = Y0; v <= Y1; v += 100) {
+      svg.appendChild(el("line", { x1: m.l, x2: m.l + pw, y1: y(v), y2: y(v), stroke: v === Y0 ? "var(--axis)" : "var(--grid)", "stroke-width": 1, "shape-rendering": "crispEdges" }));
+      svg.appendChild(el("text", { x: m.l - 8, y: y(v) + 4, "text-anchor": "end", class: "tick" }, String(v)));
+    }
+    // x ticks
+    var step = Math.max(1, Math.ceil((n * 56) / pw));
+    for (var i = 0; i < n; i++) {
+      var show = (n - 1 - i) % step === 0;
+      if (!show) continue;
+      svg.appendChild(el("line", { x1: x(i), x2: x(i), y1: m.t + ph, y2: m.t + ph + 4, stroke: "var(--axis)", "stroke-width": 1 }));
+      svg.appendChild(el("text", { x: x(i), y: m.t + ph + 20, "text-anchor": "middle", class: "tick" }, SEASONS[i].label));
+    }
+    // lines (draw 15 first so 5 sits on top)
+    var ends = [];
+    ["15", "10", "5"].forEach(function (k) {
+      var d = "", pen = false, last = null;
+      SEASONS.forEach(function (s, i) {
+        var vv = val(s, k);
+        if (vv == null) { pen = false; return; }
+        d += (pen ? "L" : "M") + x(i).toFixed(1) + " " + y(vv).toFixed(1);
+        pen = true; last = { i: i, v: vv };
+      });
+      svg.appendChild(el("path", { d: d, fill: "none", stroke: SERIES[k], "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round", class: "series" }));
+      if (last) ends.push({ k: k, i: last.i, v: last.v, yy: y(last.v) });
+    });
+    // end dots + labels (min 16px apart)
+    ends.sort(function (a, b) { return a.yy - b.yy; });
+    for (var j = 1; j < ends.length; j++) if (ends[j].yy - ends[j - 1].yy < 16) ends[j].yy = ends[j - 1].yy + 16;
+    ends.forEach(function (e) {
+      svg.appendChild(el("circle", { cx: x(e.i), cy: y(e.v), r: 4.5, fill: SERIES[e.k], stroke: "var(--surface)", "stroke-width": 2 }));
+      var t = el("text", { x: x(e.i) + 10, y: e.yy + 4, class: "endlab" });
+      var a = el("tspan", null, String(e.v)); t.appendChild(a);
+      var b = el("tspan", { class: "lbl", dx: 5 }, "top " + e.k); t.appendChild(b);
+      svg.appendChild(t);
+    });
+
+    // hover layer
+    var cross = el("line", { y1: m.t, y2: m.t + ph, stroke: "var(--muted)", "stroke-width": 1, visibility: "hidden" });
+    svg.appendChild(cross);
+    var hdots = {};
+    TOPS.forEach(function (k) {
+      hdots[k] = el("circle", { r: 4.5, fill: SERIES[k], stroke: "var(--surface)", "stroke-width": 2, visibility: "hidden" });
+      svg.appendChild(hdots[k]);
+    });
+    var hit = el("rect", { x: m.l - 10, y: m.t, width: pw + 20, height: ph + m.b, fill: "transparent" });
+    svg.appendChild(hit);
+
+    function show(i) {
+      lineIdx = i;
+      var s = SEASONS[i];
+      cross.setAttribute("x1", x(i)); cross.setAttribute("x2", x(i)); cross.setAttribute("visibility", "visible");
+      TOPS.forEach(function (k) {
+        var vv = val(s, k);
+        if (vv == null) { hdots[k].setAttribute("visibility", "hidden"); return; }
+        hdots[k].setAttribute("cx", x(i)); hdots[k].setAttribute("cy", y(vv)); hdots[k].setAttribute("visibility", "visible");
+      });
+      lineTip.textContent = "";
+      lineTip.appendChild(h("div", "t-h", "Ročník " + s.label));
+      lineTip.appendChild(h("div", "t-sub", "Vítěz: " + s.winner));
+      if (val(s, "10") == null) {
+        lineTip.appendChild(h("div", "t-sub", "FIDE Elo na soupisce tohoto ročníku chybí."));
+      } else {
+        TOPS.forEach(function (k) {
+          var r = h("div", "t-row");
+          var key = h("i", "key"); key.style.color = SERIES[k];
+          r.appendChild(key);
+          r.appendChild(h("strong", null, String(val(s, k))));
+          r.appendChild(h("em", null, "top " + k));
+          lineTip.appendChild(r);
+        });
+        var best = s.top[state.base][state.sys][0];
+        if (best) lineTip.appendChild(h("div", "t-sub", "Nejsilnější: " + best[0] + " (" + (state.sys === "N" ? best[2] : best[3]) + ")"));
+      }
+      lineTip.hidden = false;
+      var tw = lineTip.offsetWidth, th = lineTip.offsetHeight;
+      var left = x(i) + 14;
+      if (left + tw > W) left = x(i) - 14 - tw;
+      if (left < 0) left = 0;
+      var top = m.t + 4;
+      lineTip.style.left = left + "px";
+      lineTip.style.top = Math.min(top, H - th) + "px";
+    }
+    function hide() {
+      cross.setAttribute("visibility", "hidden");
+      TOPS.forEach(function (k) { hdots[k].setAttribute("visibility", "hidden"); });
+      lineTip.hidden = true;
+    }
+    function idxFrom(evt) {
+      var r = svg.getBoundingClientRect();
+      var px = ((evt.clientX - r.left) / r.width) * W;
+      return Math.max(0, Math.min(n - 1, Math.round(((px - m.l) / pw) * (n - 1))));
+    }
+    hit.addEventListener("pointermove", function (e) { show(idxFrom(e)); });
+    hit.addEventListener("pointerdown", function (e) { show(idxFrom(e)); });
+    svg.addEventListener("pointerleave", hide);
+    svg.addEventListener("focus", function () { show(lineIdx == null ? n - 1 : lineIdx); });
+    svg.addEventListener("blur", hide);
+    svg.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        e.preventDefault();
+        var i = lineIdx == null ? n - 1 : lineIdx + (e.key === "ArrowRight" ? 1 : -1);
+        show(Math.max(0, Math.min(n - 1, i)));
+      } else if (e.key === "Escape") { hide(); }
+    });
+    lineBox.insertBefore(svg, lineTip);
+  }
+
+  /* ---------- gap bar chart ---------- */
+  var gapBox = document.getElementById("gap-chart");
+  var gapTip = h("div", "tip"); gapTip.hidden = true;
+
+  function renderGap() {
+    gapBox.textContent = "";
+    gapBox.appendChild(gapTip);
+    var rows = SEASONS.filter(function (s) { return s.m[state.base].F["10"] != null; }).map(function (s) {
+      return { s: s, f: s.m[state.base].F["10"], c: s.m[state.base].N["10"], d: s.m[state.base].F["10"] - s.m[state.base].N["10"] };
+    });
+    var W = Math.max(300, gapBox.clientWidth);
+    var narrow = W < 560;
+    var H = 230;
+    var m = { l: 44, r: 8, t: 22, b: 34 };
+    var pw = W - m.l - m.r, ph = H - m.t - m.b;
+    var lo = -60, hi = 120;
+    rows.forEach(function (r) { lo = Math.min(lo, Math.floor(r.d / 20) * 20 - 10); hi = Math.max(hi, Math.ceil(r.d / 20) * 20 + 10); });
+    var y = function (v) { return m.t + ph - ((v - lo) / (hi - lo)) * ph; };
+    var band = pw / rows.length;
+    var bw = Math.min(24, band * 0.62);
+    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, width: W, height: H, role: "img",
+      "aria-label": "Sloupcový graf rozdílu mezi průměrem top 10 podle FIDE a podle ELO ČR, ročníky 2011/12 až 2025/26." });
+    for (var v = Math.ceil(lo / 50) * 50; v <= hi; v += 50) {
+      svg.appendChild(el("line", { x1: m.l, x2: m.l + pw, y1: y(v), y2: y(v), stroke: v === 0 ? "var(--axis)" : "var(--grid)", "stroke-width": 1, "shape-rendering": "crispEdges" }));
+      svg.appendChild(el("text", { x: m.l - 8, y: y(v) + 4, "text-anchor": "end", class: "tick" }, (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v)));
+    }
+    var step = Math.max(1, Math.ceil((rows.length * 56) / pw));
+    var ext = rows.reduce(function (a, r, i) { if (r.d > rows[a.max].d) a.max = i; if (r.d < rows[a.min].d) a.min = i; return a; }, { max: 0, min: 0 });
+    rows.forEach(function (r, i) {
+      var cx = m.l + band * i + band / 2;
+      var y0 = y(0), y1 = y(r.d);
+      var top = Math.min(y0, y1), hgt = Math.max(1, Math.abs(y1 - y0));
+      var rad = Math.min(4, hgt, bw / 2);
+      var xL = cx - bw / 2, xR = cx + bw / 2, d;
+      if (r.d >= 0) {
+        d = "M" + xL + " " + y0 + "V" + (top + rad) + "Q" + xL + " " + top + " " + (xL + rad) + " " + top + "H" + (xR - rad) + "Q" + xR + " " + top + " " + xR + " " + (top + rad) + "V" + y0 + "Z";
+      } else {
+        var bot = top + hgt;
+        d = "M" + xL + " " + y0 + "V" + (bot - rad) + "Q" + xL + " " + bot + " " + (xL + rad) + " " + bot + "H" + (xR - rad) + "Q" + xR + " " + bot + " " + xR + " " + (bot - rad) + "V" + y0 + "Z";
+      }
+      var g = el("g", { tabindex: "0", role: "img", "aria-label": r.s.label + ": FIDE " + r.f + ", ČR " + r.c + ", rozdíl " + (r.d > 0 ? "+" : "") + r.d });
+      var p = el("path", { d: d, fill: "var(--bar)" });
+      g.appendChild(el("rect", { x: cx - band / 2, y: m.t, width: band, height: ph, fill: "transparent" }));
+      g.appendChild(p);
+      svg.appendChild(g);
+      if (i === 0 || i === rows.length - 1 || i === ext.max || i === ext.min) {
+        var ly = r.d >= 0 ? y1 - 6 : y1 + 15;
+        svg.appendChild(el("text", { x: cx, y: ly, "text-anchor": "middle", class: "barlab" }, (r.d > 0 ? "+" : r.d < 0 ? "−" : "") + Math.abs(r.d)));
+      }
+      if ((rows.length - 1 - i) % step === 0) {
+        svg.appendChild(el("text", { x: cx, y: m.t + ph + 20, "text-anchor": "middle", class: "tick" }, r.s.label));
+      }
+      function on() {
+        p.setAttribute("fill-opacity", "0.78");
+        gapTip.textContent = "";
+        gapTip.appendChild(h("div", "t-h", "Ročník " + r.s.label));
+        var a = h("div", "t-row"); a.appendChild(h("strong", null, (r.d > 0 ? "+" : r.d < 0 ? "−" : "") + Math.abs(r.d))); a.appendChild(h("em", null, "rozdíl FIDE − ČR")); gapTip.appendChild(a);
+        var b = h("div", "t-row"); b.appendChild(h("strong", null, String(r.f))); b.appendChild(h("em", null, "top 10 FIDE")); gapTip.appendChild(b);
+        var c = h("div", "t-row"); c.appendChild(h("strong", null, String(r.c))); c.appendChild(h("em", null, "top 10 ČR")); gapTip.appendChild(c);
+        gapTip.hidden = false;
+        var tw = gapTip.offsetWidth;
+        var left = cx + band / 2 + 4;
+        if (left + tw > W) left = cx - band / 2 - 4 - tw;
+        gapTip.style.left = Math.max(0, left) + "px";
+        gapTip.style.top = "0px";
+      }
+      function off() { p.removeAttribute("fill-opacity"); gapTip.hidden = true; }
+      g.addEventListener("pointerenter", on);
+      g.addEventListener("pointerleave", off);
+      g.addEventListener("focus", on);
+      g.addEventListener("blur", off);
+    });
+    gapBox.insertBefore(svg, gapTip);
+  }
+
+  /* ---------- table ---------- */
+  var tbody = document.querySelector("#tbl tbody");
+  var open = {};
+
+  function renderTable() {
+    tbody.textContent = "";
+    var colVals = {};
+    TOPS.forEach(function (k) { colVals[k] = SEASONS.map(function (s) { return val(s, k); }).filter(function (v) { return v != null; }); });
+    var mn = {}, mx = {};
+    TOPS.forEach(function (k) { mn[k] = Math.min.apply(null, colVals[k]); mx[k] = Math.max.apply(null, colVals[k]); });
+    document.getElementById("th-n").textContent = state.base === "played" ? "Nastoupilo" : "Na soupisce";
+
+    SEASONS.slice().reverse().forEach(function (s) {
+      var tr = h("tr", "row");
+      var tdS = h("td", "season");
+      var a = h("a", null, s.label); a.href = "https://www.chess.cz/soutez/" + s.id + "/"; a.target = "_blank"; a.rel = "noopener";
+      tdS.appendChild(a);
+      tr.appendChild(tdS);
+      tr.appendChild(h("td", "team", s.winner));
+      var tdN = h("td", "r", String(state.base === "played" ? s.nPlayed : s.nRoster));
+      if (s.y === 2005 && state.base === "played") { var fn = h("span", "fn", " *"); fn.title = "Jen 4. až 7. kolo, výsledky 1. až 3. kola na chess.cz chybí."; tdN.appendChild(fn); }
+      tr.appendChild(tdN);
+      var best = s.top[state.base][state.sys][0];
+      var tdB = h("td", "best");
+      if (best) { tdB.appendChild(document.createTextNode(best[0])); tdB.appendChild(h("span", "num", String(state.sys === "N" ? best[2] : best[3]))); }
+      else tdB.appendChild(h("span", "dash", "–"));
+      tr.appendChild(tdB);
+      TOPS.forEach(function (k) {
+        var v = val(s, k);
+        var td = h("td", "r v");
+        if (v == null) { td.appendChild(h("span", "dash", "–")); }
+        else {
+          td.textContent = String(v);
+          var f = mx[k] === mn[k] ? 0 : (v - mn[k]) / (mx[k] - mn[k]);
+          td.style.background = "color-mix(in oklab, var(--heat) " + Math.round(4 + f * 30) + "%, transparent)";
+          if (v === mx[k]) { td.classList.add("max"); td.title = "Maximum sloupce"; }
+        }
+        tr.appendChild(td);
+      });
+      var tdM = h("td");
+      var list = s.top[state.base][state.sys];
+      if (list.length) {
+        var btn = h("button", "more", open[s.y] ? "Skrýt hráče" : "Hráči");
+        btn.type = "button";
+        btn.id = "more-" + s.y;
+        btn.setAttribute("aria-expanded", open[s.y] ? "true" : "false");
+        btn.setAttribute("aria-controls", "det-" + s.y);
+        btn.addEventListener("click", function () { open[s.y] = !open[s.y]; renderTable(); var b2 = document.getElementById("more-" + s.y); if (b2) b2.focus(); });
+        tdM.appendChild(btn);
+      }
+      tr.appendChild(tdM);
+      tbody.appendChild(tr);
+
+      if (open[s.y] && list.length) {
+        var dtr = h("tr", "detail"); dtr.id = "det-" + s.y;
+        var dtd = h("td"); dtd.colSpan = 8;
+        var t = h("table", "players");
+        var th = h("thead"); var hr = h("tr");
+        [["#", "r"], ["Hráč", ""], ["Družstvo", ""], ["ČR", "r"], ["FIDE", "r"], ["Partie", "r"], ["Body", "r"]].forEach(function (c) { hr.appendChild(h("th", c[1], c[0])); });
+        th.appendChild(hr); t.appendChild(th);
+        var tb = h("tbody");
+        list.forEach(function (p, i) {
+          var r = h("tr");
+          r.appendChild(h("td", "r muted", String(i + 1)));
+          r.appendChild(h("td", null, p[0]));
+          r.appendChild(h("td", "muted", p[1]));
+          r.appendChild(h("td", "r" + (state.sys === "N" ? " sel" : ""), p[2] != null ? String(p[2]) : "–"));
+          r.appendChild(h("td", "r" + (state.sys === "F" ? " sel" : ""), p[3] != null ? String(p[3]) : "–"));
+          r.appendChild(h("td", "r" + (p[4] ? "" : " muted"), p[4] ? String(p[4]) : "nenastoupil(a)"));
+          r.appendChild(h("td", "r", p[4] ? fmtScore(p[5]) : ""));
+          tb.appendChild(r);
+        });
+        t.appendChild(tb);
+        dtd.appendChild(t);
+        dtr.appendChild(dtd);
+        tbody.appendChild(dtr);
+      }
+    });
+  }
+
+  function renderAll() {
+    document.getElementById("c-sub").textContent = sysName() + ", " + baseName() + ".";
+    document.querySelectorAll("[data-sys]").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-sys") === state.sys ? "true" : "false"); });
+    document.querySelectorAll("[data-base]").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-base") === state.base ? "true" : "false"); });
+    renderLine();
+    renderGap();
+    renderTable();
+  }
+  document.querySelectorAll("[data-sys]").forEach(function (b) {
+    b.addEventListener("click", function () { state.sys = b.getAttribute("data-sys"); save(); renderAll(); });
+  });
+  document.querySelectorAll("[data-base]").forEach(function (b) {
+    b.addEventListener("click", function () { state.base = b.getAttribute("data-base"); save(); renderAll(); });
+  });
+  function save() { try { localStorage.setItem("eml-state", JSON.stringify(state)); } catch (e) {} }
+
+  var rw = null, lastW = 0;
+  window.addEventListener("resize", function () {
+    clearTimeout(rw);
+    rw = setTimeout(function () { var w = lineBox.clientWidth; if (w !== lastW) { lastW = w; renderLine(); renderGap(); } }, 120);
+  });
+  renderAll();
+  lastW = lineBox.clientWidth;
+})();
+</script>
